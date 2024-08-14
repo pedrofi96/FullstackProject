@@ -34,7 +34,7 @@ router.put('/',verifyToken, async(req, res)=>{
   // checar se o id do tonken é igual id do usuario
 
   if(userId != userReqId){
-    res.status(400).json({error: "Acesso Negado!"})
+    return res.status(400).json({error: "Acesso Negado!"})
   }
 
   const updateData ={
@@ -42,6 +42,25 @@ router.put('/',verifyToken, async(req, res)=>{
     email: req.body.email
   };
 
+  // checar senha
+
+  if(password != confirmPassword){
+    return res.status(400).json({error: "Senhas não são iguais"})
+  } else if(password == confirmPassword && password != null){
+    //criar senha para o banco de dados
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    updateData.password = passwordHash;
+  }
+
+  try{
+    const updateUser = await User.findOneAndUpdate({_id: userId}, {$set: updateData}, {new: true});
+    res.json({error:null, msg: "Usuário atualizado com sucesso!", data: updateUser});
+  }catch(err){
+    res.status(400).json({err})
+  
+  }
   
 
 });
