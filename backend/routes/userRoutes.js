@@ -40,7 +40,6 @@ router.put('/',verifyToken, async(req, res)=>{
     name: req.body.name,
     email: req.body.email
   };
-
   //checar se as senhans estão certas
   if(password != confirmPassword){
     res.status(401).json({error:"As senhas não são iguais."})

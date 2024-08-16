@@ -4,17 +4,12 @@ const multer = require("multer")
 //importando as models de party e usuarios pois as mesmas estaram ligadas.
 const Party = require("../models/party")
 const User = require("../models/usuarios")
-
 //define aonde vai salvar as fotos
-
-
 //middlewares  
 const verifyToken = require("../helpers/checkToken") //verifica se o token do usuário é valido
 const getUserByToken = require('../helpers/getUserByToken') //pega o usuário no banco baseado no token
-
 const diskStorage = require('../helpers/file-storage'); //seta o caminho e como salvar as imagens
 const upload = multer({storage:diskStorage}) //usa o diskStorage para salvar as imagens
-
 //get Party
 router.get("/", verifyToken, (req, res)=>{
   res.json({msg:"Funcionando"});
@@ -57,16 +52,13 @@ router.post("/" , verifyToken, upload.fields([{name:'photos'}]),async (req, res 
       privacy : req.body.privacy,
       userId: user._id.toString()
     })
-
     try{
       //salvando party no banco
       const newParty = await party.save();
       res.json({error:null, msg:"Evento criado com sucesso", data:newParty})
-
     }catch(err){
       res.status(400).json({msg:"Erro ao adicionar festa no banco"})
     }
-
   }catch(err){
     return res.status(400).json({error:"Não foi possivel achar o usuário."})
   }
@@ -80,9 +72,4 @@ router.get("/all", async( req, res)=>{
     res.status(400).json({err})
   }
 })
-
-
-
-
-
 module.exports = router;
