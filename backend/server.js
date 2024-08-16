@@ -6,6 +6,7 @@ const cors = require('cors')
 //rotas
 const authRouter = require('./routes/authRoutes')
 const userRouter = require('./routes/userRoutes')
+const partyRouter = require('./routes/partyRoutes')
 
 
 //config
@@ -34,6 +35,8 @@ app.use(express.static('public'));
 //atrelar rotas no express
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter)
+app.use("/api/party", partyRouter)
+
 
 
 app.listen(port , ()=>{
