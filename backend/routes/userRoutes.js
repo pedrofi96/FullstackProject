@@ -33,13 +33,14 @@ router.put('/',verifyToken, async(req, res)=>{
   const userId = user._id.toString()
   // checar se o id do tonken é igual id do usuario
   if(userId != userReqId){
-    res.status(400).json({error: "Acesso Negado!"})
+    return res.status(400).json({error: "Acesso Negado!"})
   }
   //dados a serem atualizados
   const updateData ={
     name: req.body.name,
     email: req.body.email
   };
+
   //checar se as senhans estão certas
   if(password != confirmPassword){
     res.status(401).json({error:"As senhas não são iguais."})
@@ -57,6 +58,7 @@ router.put('/',verifyToken, async(req, res)=>{
     res.json({error: null, msg: "Usuário atualizado com sucesso!", data: updatedUser})
   }catch(err){
     res.status(400).json({err})
+
   }
   
 
