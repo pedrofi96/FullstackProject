@@ -29,10 +29,8 @@ router.post("/" , verifyToken, upload.fields([{name:'photos'}]),async (req, res 
   if(title == null || description == null || partyDate== null){
     res.status(400).json({error:"Preencha todos os dados de descrição, titulo e data"})
   }
-
   const token = req.header('auth-token');
   const userByToken = await getUserByToken(token)
-
   const userId = userByToken._id.toString();
   try{
     const user = await User.findOne({_id: userId})
@@ -72,4 +70,63 @@ router.get("/all", async( req, res)=>{
     res.status(400).json({err})
   }
 })
+//metodo para pegar todas as festas do usuário
+router.get("/userparties", verifyToken, async (req, res)=>{
+  try{
+    const token = req.header('auth-token')
+    const user = await getUserByToken(token)
+    const userId = user._id.toString();
+    const parties = await Party.find({userId: userId})
+
+    res.json({error: null, parties: parties })
+
+
+  }catch(err){
+    return res.status(400).json({err})
+  }
+});
+//metodo para pegar as festas do usuário
+router.get('/userParty/:id', verifyToken, async (req, res)=>{
+  try{
+    const token = req.header('auth-token')
+    const user = await getUserByToken(token)
+    const userId = user._id.toString()
+    const partyId = req.params.id
+
+    const party = await Party.findOne({_id: partyId, userId: userId})
+
+    res.json({error: null, party: party})
+
+
+  }catch(err){
+    return res.status(400).json({err})
+  }
+});
+//pegar festas de forma não autenticada.
+router.get('/:id', async (req, res)=>{
+  try{
+    const id = req.params.id;
+    const party = await Party.findOne({_id: id})
+
+    if(party.pravicy === false){
+      res.json({error:null, party:party})
+    }else{
+      const token = req.header('auth-token')
+      const user = await getUserByToken(token)
+      const userId = user._id.toString()
+      const partyUserId = party.userId.toString();
+
+      if(userId == userPartyId){
+        return res.json({error: null, party:party})
+      }else{
+        return res.status(400).json({error:"Acesso negado."})
+      }
+
+    }
+  }catch(err){
+    return res.status(400).json({msg:"Evento não existe"})
+  }
+});
+
+
 module.exports = router;
